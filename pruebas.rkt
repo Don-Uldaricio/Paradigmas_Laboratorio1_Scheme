@@ -7,7 +7,9 @@
 ;(pixbit-d 0 1 1 2)
 
 (define (pixbit? pixel)
-  (if (and (= (length pixel) 4) (or (= (list-ref pixel 2) 0) (= (list-ref pixel 2) 1))) #t #f))
+  (if (and
+       (= (length pixel) 4)
+       (or (= (list-ref pixel 2) 0) (= (list-ref pixel 2) 1))) #t #f))
 
 (define pixb (pixbit-d 0 2 1 25))
 pixb
@@ -27,6 +29,12 @@ pixb
 
 ;Crear pixhex
 (define (pixhex-d x y hex depth) (list x y hex depth))
+
+(define (pixhex? pixel)
+  (if (and
+       (= (length pixel) 4)
+       (= (length (list-ref pixel 2) 7))) #t #f))
+
 ;(pixhex-d 0 1 1 2)
 
 ;TDA IMAGE---------------------------------------------------------
