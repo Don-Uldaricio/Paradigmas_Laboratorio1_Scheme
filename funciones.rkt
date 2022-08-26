@@ -4,17 +4,11 @@
 
 ;Crear pixbit
 (define (pixbit-d x y bit depth) (list x y bit depth))
-;(pixbit-d 0 1 1 2)
 
 (define (pixbit? pixel)
   (if (and
        (= (length pixel) 4)
        (or (= (list-ref pixel 2) 0) (= (list-ref pixel 2) 1))) #t #f))
-
-(define pixb (pixbit-d 0 2 1 25))
-pixb
-(pixbit? pixb)
-
 
 ;Crear pixrgb
 (define (pixrgb-d x y r g b depth) (list x y r g b depth))
@@ -26,12 +20,6 @@ pixb
        (and (>= (list-ref pixel 3) 0) (<= (list-ref pixel 3) 255))
        (and (>= (list-ref pixel 4) 0) (<= (list-ref pixel 4) 255)))#t #f))
 
-;EJEMPLO
-(define pixr (pixrgb-d 0 2 1 60 254 25))
-pixr
-(pixrgb? pixr)
-
-
 ;Crear pixhex
 (define (pixhex-d x y hex depth) (list x y hex depth))
 
@@ -41,11 +29,8 @@ pixr
        (string? (list-ref pixel 2))
        (= (string-length (list-ref pixel 2)) 7)) #t #f))
 
-(define pixh (pixhex-d 0 2 "#AAFFBB" 25))
-pixh
-(pixhex? pixh)
-
 ;TDA IMAGE---------------------------------------------------------
+
 ;Crear image (pixmap/pixrgb/pixhex)
 (define (image width height . pixlist) (list width height pixlist))
 
@@ -62,15 +47,31 @@ pixh
   (if (and (pixhex? (list-ref (list-ref imagen 2) 0))
            (= (length (list-ref imagen 2)) (* (list-ref imagen 0) (list-ref imagen 1)))) #t #f))
 
-(define img1 (image 2 2 (pixbit-d 0 0 1 2) (pixbit-d 0 1 1 2) (pixbit-d 1 0 1 2) (pixbit-d 1 1 1 2)))
-(bitmap? img1)
+;TDA IMAGE ---- MODIFICADORES
 
-#|
-(define (fua x y . l) (list x y l))
-(define jeje (fua 1 2 (list 3 4 5 6) (list "ab" 2)))
-(list-ref jeje 0)
-(list-ref jeje 1)
-(list-ref jeje 2)
-(list-ref (list-ref jeje 2) 0)
-(list-ref (list-ref jeje 2) 1)
-|#
+;Voltear Horizontalmente
+(define (flipH imagen)
+  (list (car imagen) (cadr imagen) (flipHpixels (list-ref imagen 2) (- (car imagen) 1))))
+
+(define (flipHpixel pixel width)
+  (cons (- width (car pixel)) (cdr pixel)))
+
+(define (flipHpixels pixlist width)
+  (if (null? pixlist)
+      null
+      (cons (flipHpixel (car pixlist) width) (flipHpixels (cdr pixlist) width))))
+
+;Voltear Verticalmente
+(define (flipV imagen)
+  (list (car imagen) (cadr imagen) (flipVpixels (list-ref imagen 2) (- (cadr imagen) 1))))
+
+(define (flipVpixel pixel height)
+  (append (list (car pixel) (- height (cadr pixel))) (cddr pixel)))
+
+(define (flipVpixels pixlist height)
+  (if (null? pixlist)
+      null
+      (cons (flipVpixel (car pixlist) height) (flipVpixels (cdr pixlist) height))))
+
+
+(provide (all-defined-out))

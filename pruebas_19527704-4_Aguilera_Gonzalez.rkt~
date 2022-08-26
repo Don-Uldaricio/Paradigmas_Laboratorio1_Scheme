@@ -1,0 +1,20 @@
+#lang racket
+
+(require (file "./funciones.rkt"))
+
+(define pixb (pixbit-d 0 2 1 25))
+pixb
+(pixbit? pixb)
+
+;EJEMPLO
+(define pixr (pixrgb-d 0 2 1 60 254 25))
+pixr
+(pixrgb? pixr)
+
+;EJEMPLO HEX
+(define pixh (pixhex-d 0 2 "#AAFFBB" 25))
+pixh
+(pixhex? pixh)
+
+(define img1 (image 2 2 (pixbit-d 0 0 1 2) (pixbit-d 0 1 1 2) (pixbit-d 1 0 1 2) (pixbit-d 1 1 1 2)))
+(bitmap? img1)
