@@ -36,36 +36,63 @@
 ;              poniéndolos en una lista
 ; Recursión: No aplica
 (define (image width height . pixlist)
-  (list width height pixlist))
+  (if (and (integer? width) (> width 0) (integer? height) (> height 0))
+      (list width height pixlist)
+      null))
 
 ; MODIFICADORES -------------------------------------
 
 ; Dominio: image
 ; Recorrido: image
-; Descripción: Determina si una imagen es hexmap
+; Descripción: Voltea una imagen de forma horizontal
 ; Recursión: No aplica
 (define (flipH img)
   (list (car img) (cadr img) (flipHpixels (list-ref img 2) (- (car img) 1))))
 
+; Dominio: pixel X int
+; Recorrido: pixel
+; Descripción: Cambia de posición un pixel volteado horizontalmente
+; Recursión: No aplica
 (define (flipHpixel pixel width)
   (cons (- width (car pixel)) (cdr pixel)))
 
+; Dominio: pixbit-d* / pixrgb-d* / pixhex-d* X int
+; Recorrido: pixbit-d* / pixrgb-d* / pixhex-d*
+; Descripción: Cambia de posición una lista de pixeles volteados horizontalmente
+; Recursión: No aplica
 (define (flipHpixels pixlist width)
   (if (null? pixlist)
       null
       (cons (flipHpixel (car pixlist) width) (flipHpixels (cdr pixlist) width))))
 
-;Voltear Verticalmente
+; Dominio: image
+; Recorrido: image
+; Descripción: Voltea una imagen de forma vertical
+; Recursión: No aplica
 (define (flipV img)
   (list (car img) (cadr img) (flipVpixels (list-ref img 2) (- (cadr img) 1))))
 
+; Dominio: pixel X int
+; Recorrido: pixel
+; Descripción: Cambia de posición un pixel volteado verticalmente
+; Recursión: No aplica
 (define (flipVpixel pixel height)
   (append (list (car pixel) (- height (cadr pixel))) (cddr pixel)))
 
+; Dominio: pixbit-d* / pixrgb-d* / pixhex-d* X int
+; Recorrido: pixbit-d* / pixrgb-d* / pixhex-d*
+; Descripción: Cambia de posición una lista de pixeles volteados verticalmente
+; Recursión: No aplica
 (define (flipVpixels pixlist height)
   (if (null? pixlist)
       null
       (cons (flipVpixel (car pixlist) height) (flipVpixels (cdr pixlist) height))))
+
+; Dominio: pixel (pixrgb-d / pixbit-d / pixhex-d)
+; Recorrido: pixel (pixrgb-d / pixbit-d / pixhex-d)
+; Descripción: Rota un pixel
+; Recursión: No aplica
+; APLICAR MATRIZ DE ROTACIÓN PARA ROTAR PIXELES
 
 ;TDA IMAGE ---- PERTENENCIA
 
