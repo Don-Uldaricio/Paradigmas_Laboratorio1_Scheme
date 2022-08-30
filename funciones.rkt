@@ -1,26 +1,72 @@
 #lang racket
 
-;TDA PIXEL--------------------------------------------------------
+; TDA PIXEL-------------------------------------------------------
 
-;Crear pixbit
+; CONSTRUCTORES --------------------------------------------------
+
+; Dominio: int X int X int X int
+; Recorrido: pixbit-d
+; Descripción: Crea un pixbit-d mediante una lista de sus parámetros
+; Recursión: No aplica
 (define (pixbit-d x y bit depth) (list x y bit depth))
 
+; Dominio: int X int X int X int X int X int
+; Recorrido: pixrgb-d
+; Descripción: Crea un pixrgb-d mediante una lista de sus parámetros
+; Recursión: No aplica
+(define (pixrgb-d x y r g b depth) (list x y r g b depth))
+
+; Dominio: int X int X int X int
+; Recorrido: pixhex-d
+; Descripción: Crea un pixhex-d mediante una lista de sus parámetros
+; Recursión: No aplica
+(define (pixhex-d x y hex depth) (list x y hex depth))
+
+; SELECTORES ----------------------------------------------------
+
+; Dominio: pixel
+; Recorrido: int
+; Descripción: Entrega la posición x del pixel
+; Recursión: No aplica
+(define (posX pixel)
+  (car pixel))
+
+; Dominio: pixel
+; Recorrido: int
+; Descripción: Entrega la posición y del pixel
+; Recursión: No aplica
+(define (posY pixel)
+  (cadr pixel))
+
+; Dominio: pixel
+; Recorrido: int
+; Descripción: Entrega la posición y del pixel
+; Recursión: No aplica
+
+; PERTENENCIA ---------------------------------------------------
+
+; Dominio: pixel
+; Recorrido: boolean
+; Descripción: Verifica si un dato es tipo pixbit-d
+; Recursión: No aplica
 (define (pixbit? pixel)
   (if (and
        (or (= (list-ref pixel 2) 0) (= (list-ref pixel 2) 1))) #t #f))
 
-;Crear pixrgb
-(define (pixrgb-d x y r g b depth) (list x y r g b depth))
-
+; Dominio: pixel
+; Recorrido: boolean
+; Descripción: Verifica si un dato es tipo pixrgb-d
+; Recursión: No aplica
 (define (pixrgb? pixel)
   (if (and
        (and (>= (list-ref pixel 2) 0) (<= (list-ref pixel 2) 255))
        (and (>= (list-ref pixel 3) 0) (<= (list-ref pixel 3) 255))
        (and (>= (list-ref pixel 4) 0) (<= (list-ref pixel 4) 255)))#t #f))
 
-;Crear pixhex
-(define (pixhex-d x y hex depth) (list x y hex depth))
-
+; Dominio: pixel
+; Recorrido: boolean
+; Descripción: Verifica si un dato es tipo pixhex-d
+; Recursión: No aplica
 (define (pixhex? pixel)
   (if (and
        (string? (list-ref pixel 2))
@@ -40,6 +86,29 @@
       (list width height pixlist)
       null))
 
+; SELECTORES ----------------------------------------
+
+; Dominio: image
+; Recorrido: int
+; Descripción: Entrega el ancho (width) de una imagen (image)
+; Recursión: No aplica
+(define (getWidth img)
+  (car img))
+
+; Dominio: image
+; Recorrido: int
+; Descripción: Entrega el alto (height) de una imagen (image)
+; Recursión: No aplica
+(define (getHeight img)
+  (cadr img))
+
+; Dominio: image
+; Recorrido: pixbit-d* | pixrgb-d* | pixhex-d*
+; Descripción: Entrega la lista de pixeles de una imagen
+; Recursión: No aplica
+(define (getPixels img)
+  (list-ref img 2))
+
 ; MODIFICADORES -------------------------------------
 
 ; Dominio: image
@@ -47,14 +116,14 @@
 ; Descripción: Voltea una imagen de forma horizontal
 ; Recursión: No aplica
 (define (flipH img)
-  (list (car img) (cadr img) (flipHpixels (list-ref img 2) (- (car img) 1))))
+  (list (getWidth img) (getHeight img) (flipHpixels (getPixels img) (- (getWidth img) 1))))
 
 ; Dominio: pixel X int
 ; Recorrido: pixel
 ; Descripción: Cambia de posición un pixel volteado horizontalmente
 ; Recursión: No aplica
 (define (flipHpixel pixel width)
-  (cons (- width (car pixel)) (cdr pixel)))
+  (cons (- width (posX pixel)) (cdr pixel)))
 
 ; Dominio: pixbit-d* / pixrgb-d* / pixhex-d* X int
 ; Recorrido: pixbit-d* / pixrgb-d* / pixhex-d*
