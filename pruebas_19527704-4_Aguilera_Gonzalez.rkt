@@ -14,7 +14,16 @@
                     (pixbit-d 3 0 1 2)
                     (pixbit-d 3 1 1 2)))
 
-(define img2 (image 2 2 (pixrgb-d 0 1 15 65 120 2) (pixrgb-d 0 1 15 65 120 2) (pixrgb-d 0 1 15 65 120 2) (pixrgb-d 0 1 15 65 120 2)))
+(define img2 (image 4 2
+                    (pixrgb-d 0 0 15 65 120 2)
+                    (pixrgb-d 0 1 15 65 120 2)
+                    (pixrgb-d 1 0 15 65 120 2)
+                    (pixrgb-d 1 1 15 65 120 2)
+                    (pixrgb-d 2 0 15 65 120 2)
+                    (pixrgb-d 2 1 15 65 120 2)
+                    (pixrgb-d 3 0 15 65 120 2)
+                    (pixrgb-d 3 1 15 65 120 2)))
+
 (define img3 (image 2 2 (pixhex-d 0 0 "#AABBCC" 2) (pixhex-d 0 0 "#AABBCC" 2) (pixhex-d 0 0 "#AABBCC" 2) (pixhex-d 0 0 "#AABBCC" 2)))
 
 (display "Es img1 un bitmap? ")
@@ -28,13 +37,8 @@ img2
 (flipH img2)
 (flipV img2)
 
-
-
-
-
-
-
-
-
-
-
+(display "Imagen rgb cortada\n")
+(crop img2 1 0 2 1)
+img2
+(display "Imagen rgb rotada 90 grados a la derecha\n")
+(rotate90 img2)

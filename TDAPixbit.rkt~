@@ -1,0 +1,27 @@
+#lang racket
+
+; TDA PIXBIT-D ------------------------------------
+
+; REPRESENTACIÓN ----------------------------------
+
+; CONSTRUCTORES -----------------------------------
+
+; Dominio: int X int X int X int
+; Recorrido: pixbit-d
+; Descripción: Crea un pixbit-d mediante una lista de sus parámetros
+; Recursión: No aplica
+(define (pixbit-d x y bit depth)
+  (list x y bit depth))
+
+; FUNCIONES DE PERTENENCIA ------------------------
+
+; SELECTORES --------------------------------------
+
+; Dominio: pixbit-d
+; Recorrido: int
+; Descripción: Entrega el valor del bit del pixbit-d
+; Recursión: No aplica
+(define (getBit pixel)
+  (third pixel))
+
+(third '(0 1 1 24))
