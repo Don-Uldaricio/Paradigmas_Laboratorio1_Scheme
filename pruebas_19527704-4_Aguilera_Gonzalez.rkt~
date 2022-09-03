@@ -1,20 +1,44 @@
 #lang racket
 
-(require (file "./funciones.rkt"))
+(require "funciones.rkt")
 
-(define pixb (pixbit-d 0 2 1 25))
-pixb
-(pixbit? pixb)
+;-------------------------------------------------------------
 
-;EJEMPLO
-(define pixr (pixrgb-d 0 2 1 60 254 25))
-pixr
-(pixrgb? pixr)
+(define img1 (image 4 2
+                    (pixbit-d 0 0 1 2)
+                    (pixbit-d 0 1 1 2)
+                    (pixbit-d 1 0 1 2)
+                    (pixbit-d 1 1 1 2)
+                    (pixbit-d 2 0 1 2)
+                    (pixbit-d 2 1 1 2)
+                    (pixbit-d 3 0 1 2)
+                    (pixbit-d 3 1 1 2)))
 
-;EJEMPLO HEX
-(define pixh (pixhex-d 0 2 "#AAFFBB" 25))
-pixh
-(pixhex? pixh)
+(define img2 (image 4 2
+                    (pixrgb-d 0 0 15 65 120 2)
+                    (pixrgb-d 0 1 15 65 120 2)
+                    (pixrgb-d 1 0 15 65 120 2)
+                    (pixrgb-d 1 1 15 65 120 2)
+                    (pixrgb-d 2 0 15 65 120 2)
+                    (pixrgb-d 2 1 15 65 120 2)
+                    (pixrgb-d 3 0 15 65 120 2)
+                    (pixrgb-d 3 1 15 65 120 2)))
 
-(define img1 (image 2 2 (pixbit-d 0 0 1 2) (pixbit-d 0 1 1 2) (pixbit-d 1 0 1 2) (pixbit-d 1 1 1 2)))
+(define img3 (image 2 2 (pixhex-d 0 0 "#AABBCC" 2) (pixhex-d 0 0 "#AABBCC" 2) (pixhex-d 0 0 "#AABBCC" 2) (pixhex-d 0 0 "#AABBCC" 2)))
+
+(display "Es img1 un bitmap? ")
 (bitmap? img1)
+(display "Es img2 un pixmap? ")
+(pixmap? img2)
+(display "Es img3 un hexmap? ")
+(hexmap? img3)
+
+img2
+(flipH img2)
+(flipV img2)
+
+(display "Imagen rgb cortada\n")
+(crop img2 1 0 2 1)
+img2
+(display "Imagen rgb rotada 90 grados a la derecha\n")
+(rotate90 img2)

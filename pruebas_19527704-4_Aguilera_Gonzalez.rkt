@@ -33,12 +33,7 @@
 (display "Es img3 un hexmap? ")
 (hexmap? img3)
 
-img2
-(flipH img2)
-(flipV img2)
+(define lst (list (list 1 25 3 4) (list 1 6 3 4) (list 1 25 5 8) (list 1 25 9 0)))
+lst
 
-(display "Imagen rgb cortada\n")
-(crop img2 1 0 2 1)
-img2
-(display "Imagen rgb rotada 90 grados a la derecha\n")
-(rotate90 img2)
+(filter (lambda (x) (if (and (> x 1) (2)) #t #f)) lst)
