@@ -24,7 +24,7 @@
                     (pixrgb-d 3 0 15 65 120 2)
                     (pixrgb-d 3 1 15 65 120 2)))
 
-(define img3 (image 2 2 (pixhex-d 0 0 "#AABBCC" 2) (pixhex-d 0 0 "#AABBCC" 2) (pixhex-d 0 0 "#AABBCC" 2) (pixhex-d 0 0 "#AABBCC" 2)))
+(define img3 (image 2 2 (pixhex-d 0 0 "#AABBCC" 2) (pixhex-d 0 1 "#AABBCC" 2) (pixhex-d 1 0 "#AABBCC" 2) (pixhex-d 1 1 "#AABBCC" 2)))
 
 (display "Es img1 un bitmap? ")
 (bitmap? img1)
@@ -33,7 +33,9 @@
 (display "Es img3 un hexmap? ")
 (hexmap? img3)
 
-(define lst (list (list 1 25 3 4) (list 1 6 3 4) (list 1 25 5 8) (list 1 25 9 0)))
-lst
+img1
+(flipH img1)
+(flipV img1)
+(rotate90 img1)
 
-(filter (lambda (x) (if (and (> x 1) (2)) #t #f)) lst)
+
