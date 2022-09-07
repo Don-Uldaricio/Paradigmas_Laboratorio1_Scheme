@@ -33,9 +33,11 @@
 (display "Es img3 un hexmap? ")
 (hexmap? img3)
 
-img1
-(flipH img1)
-(flipV img1)
-(rotate90 img1)
+img2
+(flipH img2)
+(flipV img2)
+(rotate90 img2)
+(imgRGB->imgHex img2)
+(crop img2 1 0 2 1)
 
 
