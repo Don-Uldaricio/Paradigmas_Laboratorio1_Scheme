@@ -15,8 +15,8 @@
                     (pixbit-d 3 1 1 2)))
 
 (define img2 (image 4 2
-                    (pixrgb-d 0 0 15 65 120 2)
-                    (pixrgb-d 0 1 15 34 120 2)
+                    (pixrgb-d 0 0 15 34 120 2)
+                    (pixrgb-d 0 1 15 65 120 2)
                     (pixrgb-d 1 0 15 67 120 2)
                     (pixrgb-d 1 1 15 65 40 2)
                     (pixrgb-d 2 0 15 65 30 2)
@@ -40,25 +40,32 @@ img2
 (imgRGB->imgHex img2)
 (crop img2 1 0 2 1)
 (display "-------- CAMBIO ---------------\n")
+(display "Creamos una lista con los colores de cada pixel, eliminando los repetidos:\n")
 
 (define pixlist (getPixels img3))
 
-(define (listaColores pixlist)
+(define (histogram img)
+  (colorFreq (imgColors (getPixels img)) (getPixels img)))
+
+(define (imgColors pixlist)
   (if (null? pixlist)
       null
-      (cons (getColor (car pixlist)) (listaColores (cdr pixlist)))))
-
-(listaColores pixlist)
-(display "Eliminamos los colores repetidos obteniendo la siguiente lista de colores:\n")
-(define finalColors (remove-duplicates (listaColores pixlist)))
-finalColors
-
+      (remove-duplicates (cons (getColor (car pixlist)) (imgColors (cdr pixlist))))))
 
 (define (colorFreq colorList pixlist)
-  (define equalColor? (lambda (color px)
-                          (if (= (getColor px) color) #t #f)))
   (if (null? colorList)
       null
       (cons (cons (car colorList) (count (lambda (px) (if (equal? (getColor px) (car colorList)) #t #f)) pixlist)) (colorFreq (cdr colorList) pixlist))))
 
-(colorFreq finalColors pixlist)
+(define (mostFreqColor hist)
+  (define greater (lambda (x y) (if (> (cdr x) (cdr y)) x y)))
+    (if (null? (cdr hist))
+        (car hist)
+        (greater (car hist) (mostFreqColor (cdr hist)))))
+
+(define finalColors (imgColors pixlist))
+finalColors
+(histogram img3)
+(mostFreqColor (histogram img3))
+
+

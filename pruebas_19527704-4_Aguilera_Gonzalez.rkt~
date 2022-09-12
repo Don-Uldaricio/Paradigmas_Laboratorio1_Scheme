@@ -15,16 +15,16 @@
                     (pixbit-d 3 1 1 2)))
 
 (define img2 (image 4 2
-                    (pixrgb-d 0 0 15 65 120 2)
+                    (pixrgb-d 0 0 15 34 120 2)
                     (pixrgb-d 0 1 15 65 120 2)
-                    (pixrgb-d 1 0 15 65 120 2)
-                    (pixrgb-d 1 1 15 65 120 2)
-                    (pixrgb-d 2 0 15 65 120 2)
+                    (pixrgb-d 1 0 15 67 120 2)
+                    (pixrgb-d 1 1 15 65 40 2)
+                    (pixrgb-d 2 0 15 65 30 2)
                     (pixrgb-d 2 1 15 65 120 2)
                     (pixrgb-d 3 0 15 65 120 2)
-                    (pixrgb-d 3 1 15 65 120 2)))
+                    (pixrgb-d 3 1 50 65 120 2)))
 
-(define img3 (image 2 2 (pixhex-d 0 0 "#AABBCC" 2) (pixhex-d 0 0 "#AABBCC" 2) (pixhex-d 0 0 "#AABBCC" 2) (pixhex-d 0 0 "#AABBCC" 2)))
+(define img3 (image 2 2 (pixhex-d 0 0 "#AA45CC" 2) (pixhex-d 0 1 "#AAEDCC" 2) (pixhex-d 1 0 "#AABBCC" 2) (pixhex-d 1 1 "#AABBCC" 2)))
 
 (display "Es img1 un bitmap? ")
 (bitmap? img1)
@@ -36,9 +36,40 @@
 img2
 (flipH img2)
 (flipV img2)
-
-(display "Imagen rgb cortada\n")
-(crop img2 1 0 2 1)
-img2
-(display "Imagen rgb rotada 90 grados a la derecha\n")
 (rotate90 img2)
+(imgRGB->imgHex img2)
+(crop img2 1 0 2 1)
+(display "-------- CAMBIO ---------------\n")
+(display "Creamos una lista con los colores de cada pixel, eliminando los repetidos:\n")
+
+(define pixlist (getPixels img2))
+
+(define (histogram img)
+  (colorFreq (listaColores (getPixels img)) (getPixels img)))
+
+(define (listaColores pixlist)
+  (if (null? pixlist)
+      null
+      (remove-duplicates (cons (getColor (car pixlist)) (listaColores (cdr pixlist))))))
+
+(define (colorFreq colorList pixlist)
+  (if (null? colorList)
+      null
+      (cons (cons (car colorList) (count (lambda (px) (if (equal? (getColor px) (car colorList)) #t #f)) pixlist)) (colorFreq (cdr colorList) pixlist))))
+
+(define (mostFreqColor hist)
+  (cond
+    [(empty? hist) #f]
+    ; Base case: single-element list
+    [(empty? (cdr hist)) (car hist)]
+    ; If current element is the max, return it
+    [(>= (cdar hist) (mostFreqColor (cdr hist))) (car hist)]
+    ; Otherwise the max is in the rest of the list. As an
+    ; optimization we could use a `let` to avoid making the
+    ; recursive call twice, left as an exercise for the reader
+    [else (mostFreqColor (cdr hist))]))
+
+(define finalColors (listaColores pixlist))
+finalColors
+(histogram img2)
+(cdar (histogram img2))
