@@ -1,1 +1,1 @@
-("8.5" ta6le ("84950c43e986c4959be33bff56733a4bf9100fc0" . "84a1d36909e583ce1df4fd56a024810088486d9d") (collects #"errortrace" #"errortrace-key.rkt") (collects #"racket" #"main.rkt") (collects #"racket" #"runtime-config.rkt"))
+("8.5" ta6le ("76f29f146e88781dd9ff15aa9c6aeb3fc2c549de" . "9f49061e66458bbb164f40dcead5eaaebbdd4866") #"/home/uldaricio/Desktop/Paradigmas/LAB1-PARADIGMAS/TDAPixel.rkt" (collects #"errortrace" #"errortrace-key.rkt") (collects #"racket" #"main.rkt") (collects #"racket" #"runtime-config.rkt"))

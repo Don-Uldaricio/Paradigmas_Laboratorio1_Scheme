@@ -1,30 +1,33 @@
 #lang racket
 
 (require "funciones.rkt")
+(require "TDAPixel.rkt")
+(require "TDAHistogram.rkt")
+
 
 ;-------------------------------------------------------------
 
 (define img1 (image 4 2
                     (pixbit-d 0 0 1 2)
-                    (pixbit-d 0 1 1 2)
+                    (pixbit-d 0 1 0 2)
                     (pixbit-d 1 0 1 2)
-                    (pixbit-d 1 1 1 2)
+                    (pixbit-d 1 1 0 2)
                     (pixbit-d 2 0 1 2)
-                    (pixbit-d 2 1 1 2)
-                    (pixbit-d 3 0 1 2)
+                    (pixbit-d 2 1 0 2)
+                    (pixbit-d 3 0 0 2)
                     (pixbit-d 3 1 1 2)))
 
 (define img2 (image 4 2
                     (pixrgb-d 0 0 15 34 120 2)
-                    (pixrgb-d 0 1 15 65 120 2)
                     (pixrgb-d 1 0 15 67 120 2)
-                    (pixrgb-d 1 1 15 65 40 2)
                     (pixrgb-d 2 0 15 65 30 2)
-                    (pixrgb-d 2 1 15 65 120 2)
                     (pixrgb-d 3 0 15 65 120 2)
+                    (pixrgb-d 0 1 15 65 120 2)
+                    (pixrgb-d 1 1 15 65 40 2)          
+                    (pixrgb-d 2 1 15 65 120 2) 
                     (pixrgb-d 3 1 50 65 120 2)))
 
-(define img3 (image 2 2 (pixhex-d 0 0 "#AA45CC" 2) (pixhex-d 0 1 "#AAEDCC" 2) (pixhex-d 1 0 "#AABBCC" 2) (pixhex-d 1 1 "#AABBCC" 2)))
+(define img3 (image 2 2 (pixhex-d 0 0 "#AA45CC" 2) (pixhex-d 1 0 "#AAEDCC" 2) (pixhex-d 0 1 "#AABBCC" 2) (pixhex-d 1 1 "#AA78CC" 2)))
 
 (display "Es img1 un bitmap? ")
 (bitmap? img1)
@@ -42,30 +45,24 @@ img2
 (display "-------- CAMBIO ---------------\n")
 (display "Creamos una lista con los colores de cada pixel, eliminando los repetidos:\n")
 
+
 (define pixlist (getPixels img3))
-
-(define (histogram img)
-  (colorFreq (imgColors (getPixels img)) (getPixels img)))
-
-(define (imgColors pixlist)
-  (if (null? pixlist)
-      null
-      (remove-duplicates (cons (getColor (car pixlist)) (imgColors (cdr pixlist))))))
-
-(define (colorFreq colorList pixlist)
-  (if (null? colorList)
-      null
-      (cons (cons (car colorList) (count (lambda (px) (if (equal? (getColor px) (car colorList)) #t #f)) pixlist)) (colorFreq (cdr colorList) pixlist))))
-
-(define (mostFreqColor hist)
-  (define greater (lambda (x y) (if (> (cdr x) (cdr y)) x y)))
-    (if (null? (cdr hist))
-        (car hist)
-        (greater (car hist) (mostFreqColor (cdr hist)))))
-
 (define finalColors (imgColors pixlist))
 finalColors
 (histogram img3)
+(display "El color más frecuente del histograma es:\n")
 (mostFreqColor (histogram img3))
 
+(display "-------- CAMBIO ---------------\n")
+(display "Uso de funciones + edit:\nSe muestra el bitmap img1 y luego se invierten los bits de sus pixeles:\n")
+img1
+(edit invertColorBit img1)
+
+(display "-------- CAMBIO ---------------\n")
+(display "Se muestra el pixmap img2 y luego se invierten los canales de sus pixeles:\n")
+img2
+(edit invertColorRGB img2)
+
+(display "---------CAMBIO---------------\nimage->string img3 (hexmap):\n")
+(image->string img3)
 
