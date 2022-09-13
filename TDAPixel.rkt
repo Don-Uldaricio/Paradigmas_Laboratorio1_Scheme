@@ -8,7 +8,10 @@
 ; Recorrido: pixbit-d
 ; Descripción: Crea un pixbit-d mediante una lista de sus parámetros
 ; Recursión: No aplica
-(define (pixbit-d x y bit depth) (list (list x y) bit depth))
+(define (pixbit-d x y bit depth)
+  (cond
+    [(equal? bit 0) (list (list x y) "0" depth)]
+    [(equal? bit 1) (list (list x y) "1" depth)]))
 
 ; Dominio: int X int X int X int X int X int
 ; Recorrido: pixrgb-d
@@ -30,7 +33,7 @@
 ; Descripción: Verifica si un dato es tipo pixbit-d
 ; Recursión: No aplica
 (define (pixbit? pixel)
-  (if (and (integer? (second pixel)) (= (length pixel) 3) (or (= (second pixel) 0) (= (second pixel) 1))) #t #f))
+  (if (and (string? (second pixel)) (= (length pixel) 3) (or (equal? (second pixel) "0") (equal? (second pixel) "1"))) #t #f))
 
 ; Dominio: pixel
 ; Recorrido: boolean
