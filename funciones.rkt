@@ -154,15 +154,6 @@
   (define equalColor? (lambda (x) (if (equal? (mostFreqColor (histogram img)) (getColor x)) #t #f)))
   (list (getWidth img) (getHeight img) (mostFreqColor (histogram img)) (filter-not equalColor? (getPixels img)) (compressPixels (getPixels img) (mostFreqColor (histogram img)))))
 
-
-(define (compressPixels pixlist color)
-  (if (null? pixlist)
-      null
-      (if (equal? (getColor (car pixlist)) color)
-          (cons (list (posX (car pixlist)) (posY (car pixlist)) (getDepth (car pixlist))) (compressPixels (cdr pixlist) color))
-          (compressPixels (cdr pixlist) color))))
-
-
 ; Dominio: image
 ; Recorrido: image
 ; Descripción: Transforma una imagen tipo pixrgb-d en una pixhex-d
@@ -206,6 +197,42 @@
       (cons (getColor (car pixlist)) (printPixels (cdr pixlist)))))))
   (string-join (printPixels (getPixels (fn img)))))
 
+; Dominio: image
+; Recorrido: image list
+; Descripción: Crea una lista de imagenes donde cada imagen contiene pixeles de la misma profundidad.
+;              Los pixeles que no pertenecen a la profundidad son reemplazados con pixeles blancos.
+; Recursión: No aplica
+(define (depthLayers img)
+  (define (depthImage depthlist)
+    (define whiteDepthPixel (lambda (pixel)
+                              (if (= (getDepth pixel) (car depthlist))
+                                  pixel
+                                  (cond
+                                    [(pixbit? pixel) (pixbit-d (posX pixel) (posY pixel) 1 (car depthlist))]
+                                    [(pixrgb? pixel) (pixrgb-d (posX pixel) (posY pixel) 255 255 255 (car depthlist))]
+                                    [(pixhex? pixel) (pixhex-d (posX pixel) (posY pixel) "#FFFFFF" (car depthlist))]))))
+  (if (null? depthlist)
+      null
+      (cons (list (getWidth img) (getHeight img) (list) (map whiteDepthPixel (getPixels img)) (list)) (depthImage (cdr depthlist)))))
+  (depthImage (imgDepths (getPixels img))))
+
+; Dominio: image
+; Recorrido: image
+; Descripción: Descomprime una imagen previamente comprimida recuperando
+;              los pixeles eliminados.
+; Recursión: No aplica
+(define (decompress img)
+  (sortImage (list (getWidth img) (getHeight img) (list) (append (getPixels img) (recoverCompPixels (getCompPixels img) (getCompColor img))) (list))))
+
+; Dominio: image
+; Recorrido: image
+; Descripción: Ordena los pixeles de una imgen para visualizar la imagen correctamente
+;              al aplicar la función image->string
+; Recursión: No aplica
+(define (sortImage img)
+  (define sortPixels (lambda (pixlist) (sort (sort pixlist #:key caar <) #:key cadar <)))
+  (list (getWidth img) (getHeight img) (getCompColor img) (sortPixels (getPixels img)) (getCompPixels img)))
+
 
 ; ------------------------------------------------------ OTRAS FUNCIONES ------------------------------------------------------------------
 
@@ -246,6 +273,18 @@
 (define (greater x y)
   (if (>= (cdr x) (cdr y)) x y))
 
+; Dominio: lista de pixeles X color (pixbit-d | pixhex-d | pixrgb-d)
+; Recorrido: lista de pixeles comprimidos
+; Descripción: Retorna una lista con los pixeles comprimidos y la información
+;              de su posición y profundidad.
+; Recursión: De cola
+(define (compressPixels pixlist color)
+  (if (null? pixlist)
+      null
+      (if (equal? (getColor (car pixlist)) color)
+          (cons (list (posX (car pixlist)) (posY (car pixlist)) (getDepth (car pixlist))) (compressPixels (cdr pixlist) color))
+          (compressPixels (cdr pixlist) color))))
+
 ; Dominio: funcion X image
 ; Recorrido: image
 ; Descripción: Función de orden superior que permite aplicar un filtro de manera
@@ -274,6 +313,24 @@
 ; Recursión: No aplica
 (define (pixhex->string img)
   (if (hexmap? img) img null))
+
+; Dominio: pixel list
+; Recorrido: depth list (int*)
+; Descripción: Entrega una lista con las profundidades de los pixeles de la imagen, sin repetir.
+; Recursión: No aplica
+(define (imgDepths pixlist)
+  (if (null? pixlist)
+      null
+      (remove-duplicates (cons (getDepth (car pixlist)) (imgDepths (cdr pixlist))))))
+
+; Dominio: lista de pixeles X color (pixrgb-d | pixhex-d | pixbit-d)
+; Recorrido: lista de pixeles comprimidos
+; Descripción: Retorna una lista con los pixeles recuperados para descomprimir la imagen
+; Recursión: De cola
+(define (recoverCompPixels pixlist color)
+  (if (null? pixlist)
+      null
+      (cons (list (list (first (car pixlist)) (second (car pixlist))) color (third (car pixlist))) (recoverCompPixels (cdr pixlist) color))))
 
 
 ; -------------------------------------------------------------------------------

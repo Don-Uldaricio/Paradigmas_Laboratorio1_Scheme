@@ -9,25 +9,25 @@
 
 (define img1 (image 4 2
                     (pixbit-d 0 0 1 2)
-                    (pixbit-d 1 0 1 2)
+                    (pixbit-d 1 0 1 4)
                     (pixbit-d 2 0 1 2)
                     (pixbit-d 3 0 0 2)
-                    (pixbit-d 0 1 0 2)
+                    (pixbit-d 0 1 0 4)
                     (pixbit-d 1 1 0 2)
-                    (pixbit-d 2 1 0 2) 
-                    (pixbit-d 3 1 1 2)))
+                    (pixbit-d 2 1 0 1) 
+                    (pixbit-d 3 1 1 0)))
 
 (define img2 (image 4 2
-                    (pixrgb-d 0 0 15 34 120 2)
+                    (pixrgb-d 0 0 15 34 120 3)
                     (pixrgb-d 1 0 15 67 120 2)
                     (pixrgb-d 2 0 15 65 30 2)
-                    (pixrgb-d 3 0 15 65 120 2)
-                    (pixrgb-d 0 1 15 65 120 2)
-                    (pixrgb-d 1 1 15 65 40 2)          
-                    (pixrgb-d 2 1 15 65 120 2) 
+                    (pixrgb-d 3 0 15 65 120 3)
+                    (pixrgb-d 0 1 15 65 120 1)
+                    (pixrgb-d 1 1 15 65 40 1)          
+                    (pixrgb-d 2 1 15 65 120 1) 
                     (pixrgb-d 3 1 50 65 120 2)))
 
-(define img3 (image 2 2 (pixhex-d 0 0 "#AA45CC" 2) (pixhex-d 1 0 "#AAEDCC" 2) (pixhex-d 0 1 "#AABBCC" 2) (pixhex-d 1 1 "#AA45CC" 2)))
+(define img3 (image 2 2 (pixhex-d 0 0 "#AA45CC" 1) (pixhex-d 1 0 "#AAEDCC" 1) (pixhex-d 0 1 "#AABBCC" 0) (pixhex-d 1 1 "#AA45CC" 2)))
 
 (define img4 (image 4 2
                     (pixbit-d 0 0 1 2)
@@ -93,18 +93,6 @@ img2
 (compressed? (compress img2))
 (compressed? img2)
 
-(define (sortImage img)
-  (define sortPixels (lambda (pixlist) (sort (sort pixlist #:key caar <) #:key cadar <)))
-  (list (getWidth img) (getHeight img) (getCompColor img) (sortPixels (getPixels img)) (getCompPixels img)))
-
-(define (recoverCompPixels pixlist color)
-  (if (null? pixlist)
-      null
-      (cons (list (list (first (car pixlist)) (second (car pixlist))) color (third (car pixlist))) (recoverCompPixels (cdr pixlist) color))))
-
-(define (decompress img)
-  (sortImage (list (getWidth img) (getHeight img) (list) (append (getPixels img) (recoverCompPixels (getCompPixels img) (getCompColor img))) (list))))
-
 (display "\n---------CAMBIO---------------\ncompress img3:\n")
 img3
 (define compimg3 (compress img3))
@@ -124,5 +112,6 @@ compimg3
 img4
 (sortImage img4)
 
-
+(display "\n---------CAMBIO---------------\nCreamos una lista de imagenes con depthLayers:\n")
+(depthLayers img3)
 
