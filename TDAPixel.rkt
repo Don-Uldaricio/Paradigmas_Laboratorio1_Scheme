@@ -58,21 +58,14 @@
 ; Recorrido: int
 ; Descripción: Entrega la posición x de un pixel de cualquier tipo
 ; Recursión: No aplica
-(define (pos pixel)
-  (car pixel))
-
-; Dominio: pixel
-; Recorrido: int
-; Descripción: Entrega la posición x de un pixel de cualquier tipo
-; Recursión: No aplica
-(define (posX pixel)
+(define (getPosX pixel)
   (caar pixel))
 
 ; Dominio: pixel
 ; Recorrido: int
 ; Descripción: Entrega la posición y de un pixel de cualquier tipo
 ; Recursión: No aplica
-(define (posY pixel)
+(define (getPosY pixel)
   (cadar pixel))
 
 ; Dominio: pixbit-d
@@ -141,34 +134,16 @@
 ; Descripción: Cambia el valor de la coordenada X del pixel a un valor entero cualquiera
 ; Recursión: No aplica
 (define (setPosX pixel val)
-  (list (list val (posY pixel)) (getColor pixel) (getDepth pixel)))
+  (list (list val (getPosY pixel)) (getColor pixel) (getDepth pixel)))
 
 ; Dominio: pixel X int
 ; Recorrido: pixel
 ; Descripción: Cambia el valor de la coordenada Y del pixel a un valor entero cualquiera
 ; Recursión: No aplica
 (define (setPosY pixel val)
-  (list (list (posX pixel) val) (getColor pixel) (getDepth pixel)))
+  (list (list (getPosX pixel) val) (getColor pixel) (getDepth pixel)))
 
 ; OTRAS FUNCIONES --------------------------------------------------------------
-
-; Dominio: lista de pixeles (pixrgb-d* | pixbit-d* | pixhex-d*)
-; Recorrido: Lista de colores
-; Descripción: Crea una lista de colores (sin repetir) a partir de una imagen
-; Recursión: No aplica
-(define (imgColors pixlist)
-  (if (null? pixlist)
-      null
-      (remove-duplicates (cons (getColor (car pixlist)) (imgColors (cdr pixlist))))))
-
-; Dominio: color (rgb | hex | bit) X lista de pixeles
-; Recorrido: Lista de pares -> color X frecuencia (int)
-; Descripción: Crea una lista que contiene los colores de una lista de pixeles y su frecuencia
-; Recursión: No aplica
-(define (colorFreq colorList pixlist)
-  (if (null? colorList)
-      null
-      (cons (cons (car colorList) (count (lambda (px) (if (equal? (getColor px) (car colorList)) #t #f)) pixlist)) (colorFreq (cdr colorList) pixlist))))
 
 ; Dominio: int
 ; Recorrido: str
@@ -195,7 +170,7 @@
 
 ; Dominio: pixel (pixbit-d | pixrgb-d | pixhex-d)
 ; Recorrido: String color hexadecimal (#XXXXXX)
-; Descripción: Concatena los canales de color RGB en un formato hexadecimal
+; Descripción: Transforma el canal RGB a su interpretación hexadecimal
 ; Recursión: No aplica
 (define (intHex pixel)
   (string-append "#" (intStr (quotient (redChannel pixel) 16)) (intStr (remainder (redChannel pixel) 16))
