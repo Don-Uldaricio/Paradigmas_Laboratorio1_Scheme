@@ -13,10 +13,10 @@
 ; Recursión: No aplica
 (define (image width height . pixlist)
   (if (and (integer? width) (> width 0) (integer? height) (> height 0))
-      (list width height (list) pixlist (list))
+      (sortImage (list width height (list) pixlist (list)))
       null))
 
-; ---------------------------------------------- FUNCIONES DE PERTENENCIA ------------------------------------------------------
+; ------------------------------------------- FUNCIONES DE PERTENENCIA ---------------------------------------------
 
 ; Dominio: image
 ; Recorrido: boolean
@@ -77,20 +77,6 @@
   (fourth img))
 
 ; Dominio: image
-; Recorrido: pixbit-d | pixrgb-d | pixhex-d
-; Descripción: Entrega el primer pixel de una imagen
-; Recursión: No aplica
-(define (firstPixel img)
-  (first (getPixels img)))
-
-; Dominio: image
-; Recorrido: pixbit-d* | pixrgb-d* | pixhex-d*
-; Descripción: Entrega la lista de pixeles de una imagen, exceptuando el primer término
-; Recursión: No aplica
-(define (restPixels img)
-  (rest (getPixels img)))
-
-; Dominio: image
 ; Recorrido: lista de pixeles
 ; Descripción: Entrega la lista de pixeles comprimidos de una imagen con su posición y profundidad
 ; Recursión: No aplica
@@ -105,7 +91,7 @@
 ; Recursión: De cola (por la función setPixels)
 (define (flipH img)
   (define flipHpixel (lambda (pixel)
-                       (setPosX pixel (- (- (getWidth img) 1) (posX pixel)))))
+                       (setPosX pixel (- (- (getWidth img) 1) (getPosX pixel)))))
   (list (getWidth img) (getHeight img) (getCompColor img) (setPixels img flipHpixel) (getCompPixels img)))
 
 ; Dominio: image
@@ -114,7 +100,7 @@
 ; Recursión: De cola (por la función setPixels)
 (define (flipV img)
   (define flipVpixel (lambda (pixel)
-                       (setPosY pixel (- (- (getHeight img) 1) (posY pixel)))))
+                       (setPosY pixel (- (- (getHeight img) 1) (getPosY pixel)))))
   (list (getWidth img) (getHeight img) (getCompColor img) (setPixels img flipVpixel) (getCompPixels img)))
 
 
@@ -124,8 +110,8 @@
 ; Recursión: No aplica
 (define (crop img x1 y1 x2 y2)
   (define moveCropPixel (lambda (pixel)
-    (setPosY (setPosX pixel (- (posX pixel) x1)) (- (posY pixel) y1))))
-  (if (and (> x2 x1) (> y2 y1) (>= x1 0) (<= x2 (- (getWidth img) 1)) (>= y1 0) (<= y2 (- (getHeight img) 1)))
+    (setPosY (setPosX pixel (- (getPosX pixel) x1)) (- (getPosY pixel) y1))))
+  (if (and (>= x2 x1) (>= y2 y1) (>= x1 0) (<= x2 (- (getWidth img) 1)) (>= y1 0) (<= y2 (- (getHeight img) 1)))
       (list (+ (- x2 x1) 1) (+ (- y2 y1) 1) (getCompColor img) (map moveCropPixel (filter (lambda (pixel) (insideCrop? pixel x1 y1 x2 y2)) (getPixels img))) (getCompPixels img))
       null))
 
@@ -142,7 +128,7 @@
 ; Recursión: No aplica
 (define (rotate90 img)
   (define rotatePixel (lambda (pixel)
-                      (list (list (+ (* -1 (posY pixel)) (- (getHeight img) 1)) (posX pixel)) (getColor pixel) (getDepth pixel))))
+                      (list (list (+ (* -1 (getPosY pixel)) (- (getHeight img) 1)) (getPosX pixel)) (getColor pixel) (getDepth pixel))))
   (list (getHeight img) (getWidth img) (list) (setPixels img rotatePixel) (list)))
 
 ; Dominio: image
@@ -156,22 +142,22 @@
 
 ; Dominio: image
 ; Recorrido: image
-; Descripción: Transforma una imagen tipo pixrgb-d en una pixhex-d
+; Descripción: Transforma una imagen tipo pixmap-d en una hexmap-d
 ; Recursión: No aplica
 (define (imgRGB->imgHex img)
   (define rgbToHex (lambda (pixel)
-                     (pixhex-d (posX pixel) (posY pixel) (intHex pixel) (getDepth pixel))))
+                     (pixhex-d (getPosX pixel) (getPosY pixel) (intHex pixel) (getDepth pixel))))
   (list (getWidth img) (getHeight img) (getCompColor img) (map rgbToHex (getPixels img)) (getCompPixels img)))
 
 ; Dominio: pixbit-d
 ; Recorrido: pixbit-d
-; Descripción: Cambia el valor del bit del pixbit-d al bit opuesto
+; Descripción: Cambia el valor de los pixbit-d pertenecientes al bitmap-d al bit opuesto
 ; Recursión: No aplica
 (define (invertColorBit pixel)
   (if (pixbit? pixel)
       (if (equal? (getBit pixel) "0")
-      (pixbit-d (posX pixel) (posY pixel) 1 (getDepth pixel))
-      (pixbit-d (posX pixel) (posY pixel) 0 (getDepth pixel)))
+      (pixbit-d (getPosX pixel) (getPosY pixel) 1 (getDepth pixel))
+      (pixbit-d (getPosX pixel) (getPosY pixel) 0 (getDepth pixel)))
       null))
 
 ; Dominio: pixrgb-d
@@ -181,21 +167,26 @@
 (define (invertColorRGB pixel)
   (define invertColor (lambda (x) (- 255 x)))
   (if (pixrgb? pixel)
-      (pixrgb-d (posX pixel) (posY pixel) (invertColor (redChannel pixel)) (invertColor (greenChannel pixel)) (invertColor (blueChannel pixel)) (getDepth pixel))
+      (pixrgb-d (getPosX pixel) (getPosY pixel) (invertColor (redChannel pixel)) (invertColor (greenChannel pixel)) (invertColor (blueChannel pixel)) (getDepth pixel))
       null))
 
 ; Dominio: image X fn
 ; Recorrido: string
-; Descripción: Transforma una imagen a un representación string hexadecimal
+; Descripción: Muestra una imagen con sus pixeles representados como string
 ; Recursión: De cola, en la función lambda printPixels
 (define (image->string img fn)
   (define printPixels (lambda (pixlist)
   (if (null? pixlist)
       null
-      (if (= (posX (car pixlist)) (- (getWidth img) 1))
-      (cons (string-join (list (getColor (car pixlist)) "\n")) (printPixels (cdr pixlist)))
-      (cons (getColor (car pixlist)) (printPixels (cdr pixlist)))))))
-  (string-join (printPixels (getPixels (fn img)))))
+      (cond
+        [(= (length (getPixels img)) 1) (list "" (getColor (car pixlist)) "\n\n")]
+        [(and (= (getPosX (car pixlist)) 0)
+              (= (getPosY (car pixlist)) 0)) (cons (string-join (list "" (getColor (car pixlist)))) (printPixels (cdr pixlist)))]
+        [(and (= (getPosX (car pixlist)) (- (getWidth img) 1))
+              (= (getPosY (car pixlist)) (- (getHeight img) 1))) (cons (string-join (list (getColor (car pixlist)) "\n\n")) (printPixels (cdr pixlist)))]
+        [(= (getPosX (car pixlist)) (- (getWidth img) 1)) (cons (string-join (list (getColor (car pixlist)) "\n")) (printPixels (cdr pixlist)))]
+        [else (cons (getColor (car pixlist)) (printPixels (cdr pixlist)))]))))
+  (string-join (printPixels (getPixels (fn (sortImage (decompress img)))))))
 
 ; Dominio: image
 ; Recorrido: image list
@@ -208,9 +199,9 @@
                               (if (= (getDepth pixel) (car depthlist))
                                   pixel
                                   (cond
-                                    [(pixbit? pixel) (pixbit-d (posX pixel) (posY pixel) 1 (car depthlist))]
-                                    [(pixrgb? pixel) (pixrgb-d (posX pixel) (posY pixel) 255 255 255 (car depthlist))]
-                                    [(pixhex? pixel) (pixhex-d (posX pixel) (posY pixel) "#FFFFFF" (car depthlist))]))))
+                                    [(pixbit? pixel) (pixbit-d (getPosX pixel) (getPosY pixel) 1 (car depthlist))]
+                                    [(pixrgb? pixel) (pixrgb-d (getPosX pixel) (getPosY pixel) 255 255 255 (car depthlist))]
+                                    [(pixhex? pixel) (pixhex-d (getPosX pixel) (getPosY pixel) "#FFFFFF" (car depthlist))]))))
   (if (null? depthlist)
       null
       (cons (list (getWidth img) (getHeight img) (list) (map whiteDepthPixel (getPixels img)) (list)) (depthImage (cdr depthlist)))))
@@ -222,7 +213,13 @@
 ;              los pixeles eliminados.
 ; Recursión: No aplica
 (define (decompress img)
-  (sortImage (list (getWidth img) (getHeight img) (list) (append (getPixels img) (recoverCompPixels (getCompPixels img) (getCompColor img))) (list))))
+  (define recoverCompPixels (lambda (pixlist color)
+  (if (null? pixlist)
+      null
+      (cons (list (list (first (car pixlist)) (second (car pixlist))) color (third (car pixlist))) (recoverCompPixels (cdr pixlist) color)))))
+  (if (compressed? img)
+      (sortImage (list (getWidth img) (getHeight img) (list) (append (getPixels img) (recoverCompPixels (getCompPixels img) (getCompColor img))) (list)))
+      img))
 
 ; Dominio: image
 ; Recorrido: image
@@ -252,7 +249,25 @@
 ;              del área de recorte (crop)
 ; Recursión: No aplica
 (define (insideCrop? pixel x1 y1 x2 y2)
-  (if (and (>= (posX pixel) x1) (<= (posX pixel) x2) (>= (posY pixel) y1) (<= (posY pixel) y2)) #t #f))
+  (if (and (>= (getPosX pixel) x1) (<= (getPosX pixel) x2) (>= (getPosY pixel) y1) (<= (getPosY pixel) y2)) #t #f))
+
+; Dominio: lista de pixeles (pixrgb-d* | pixbit-d* | pixhex-d*)
+; Recorrido: Lista de colores
+; Descripción: Crea una lista de colores (sin repetir) a partir de una imagen
+; Recursión: No aplica
+(define (imgColors pixlist)
+  (if (null? pixlist)
+      null
+      (remove-duplicates (cons (getColor (car pixlist)) (imgColors (cdr pixlist))))))
+
+; Dominio: lista de colores (bit | rgb | hex) X lista de pixeles
+; Recorrido: Lista de pares -> color X frecuencia (int)
+; Descripción: Crea una lista que contiene los colores de una lista de pixeles y su frecuencia
+; Recursión: No aplica
+(define (colorFreq colorList pixlist)
+  (if (null? colorList)
+      null
+      (cons (cons (car colorList) (count (lambda (px) (if (equal? (getColor px) (car colorList)) #t #f)) pixlist)) (colorFreq (cdr colorList) pixlist))))
 
 ; Dominio: histogram
 ; Recorrido: Par que contiene el color (bit | rgb | hex) y frecuencia del color más repetido en el histograma
@@ -262,16 +277,8 @@
     (define mostFreqElement (lambda (hist)
                               (if (null? (cdr hist))
                                   (car hist)
-                                  (greater (car hist) (mostFreqElement (cdr hist))))))
+                                  ((lambda (x y) (if (>= (cdr x) (cdr y)) x y)) (car hist) (mostFreqElement (cdr hist))))))
   (car (mostFreqElement hist)))
-
-; Dominio: elemento de histogram
-; Recorrido: elemento de histograma
-; Descripción: Compara dos elementos tipo histograma (cons Color Frecuencia)
-;              y entrega el que tiene mayor frecuencia.
-; Recursión: No aplica
-(define (greater x y)
-  (if (>= (cdr x) (cdr y)) x y))
 
 ; Dominio: lista de pixeles X color (pixbit-d | pixhex-d | pixrgb-d)
 ; Recorrido: lista de pixeles comprimidos
@@ -282,7 +289,7 @@
   (if (null? pixlist)
       null
       (if (equal? (getColor (car pixlist)) color)
-          (cons (list (posX (car pixlist)) (posY (car pixlist)) (getDepth (car pixlist))) (compressPixels (cdr pixlist) color))
+          (cons (list (getPosX (car pixlist)) (getPosY (car pixlist)) (getDepth (car pixlist))) (compressPixels (cdr pixlist) color))
           (compressPixels (cdr pixlist) color))))
 
 ; Dominio: funcion X image
@@ -322,16 +329,6 @@
   (if (null? pixlist)
       null
       (remove-duplicates (cons (getDepth (car pixlist)) (imgDepths (cdr pixlist))))))
-
-; Dominio: lista de pixeles X color (pixrgb-d | pixhex-d | pixbit-d)
-; Recorrido: lista de pixeles comprimidos
-; Descripción: Retorna una lista con los pixeles recuperados para descomprimir la imagen
-; Recursión: De cola
-(define (recoverCompPixels pixlist color)
-  (if (null? pixlist)
-      null
-      (cons (list (list (first (car pixlist)) (second (car pixlist))) color (third (car pixlist))) (recoverCompPixels (cdr pixlist) color))))
-
 
 ; -------------------------------------------------------------------------------
 ; Para poder usar este TDA en los demás archivos, es necesaria la linea de abajo

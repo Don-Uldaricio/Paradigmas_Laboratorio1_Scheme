@@ -2,6 +2,13 @@
 
 ; -------------------------------------------------- TDA PIXEL -----------------------------------------------------
 
+; ----------------------------------------------- REPRESENTACIÓN -------------------------------------------------
+
+; A continuación se presenta el TDA Pixel, donde convergen todos los tipos de pixel mostrados en el enunciado de este
+; Laboratorio 1 (pixbit-d, pixrgb-d y pixhex-d) los cuales están compuestos por: la posición dentro de la imagen (x e y),
+; el color (dependiendo si es bit, rgb o hex tendrá diferentes representaciones mostradas en las funciones Constructoras),
+; y profundidad. Todos estos elementos componen una lista mostrada en los Constructores.
+
 ; ------------------------------------------------- CONSTRUCTORES --------------------------------------------------
 
 ; Dominio: int X int X int X int

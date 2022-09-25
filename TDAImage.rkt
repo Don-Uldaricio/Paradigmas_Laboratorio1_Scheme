@@ -4,6 +4,13 @@
 
 ; ------------------------------------------------- TDA IMAGE -----------------------------------------------------
 
+; ----------------------------------------------- REPRESENTACIÓN -------------------------------------------------
+
+; A continuación se presenta el TDA Image, el cual corresponde tal y como dice su nombre a una representación de una
+; imagen, la cual contiene dimensiones de ancho y alto, colores comprimidos y pixeles que componen la imagen e información
+; de la posición y profunidad de los pixeles comprimidos. Esta representación está dada por una lista de esos elementos
+; la que se muestra en la función Constructor image y por lo tanto se necesita del TDA Pixel para su uso.
+
 ; ------------------------------------------------ CONSTRUCTORES -------------------------------------------------
 
 ; Dominio: Width (int) X Height (int) X [pixbit-d* |  pixrgb-d* | pixhex-d*]
