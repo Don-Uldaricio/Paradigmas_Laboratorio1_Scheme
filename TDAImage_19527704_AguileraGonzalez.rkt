@@ -1,6 +1,6 @@
 #lang racket
 
-(require "TDAPixel.rkt")
+(require "TDAPixel_19527704_AguileraGonzalez.rkt")
 
 ; ------------------------------------------------- TDA IMAGE -----------------------------------------------------
 
