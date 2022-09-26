@@ -1,7 +1,7 @@
 #lang racket
 
-(require "TDAImage_19527704_AguileraGonzalez.rkt")
-(require "TDAPixel_19527704_AguileraGonzalez.rkt")
+(require "TDAImage.rkt")
+(require "TDAPixel.rkt")
 
 ;--------------------------------------- SCRIPT DE PRUEBAS --------------------------------------
 
